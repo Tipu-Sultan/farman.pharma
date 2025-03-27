@@ -4,11 +4,25 @@
     "paths": {
       "@/*": ["./*"] // Map @/ to the root directory
     },
-    "module": "esnext",
-    "jsx": "preserve",
-    "allowJs": true,
-    "esModuleInterop": true,
+    "target": "es5", // Compile to ES5 for broad compatibility
+    "lib": ["dom", "dom.iterable", "esnext"], // Include necessary libraries
+    "allowJs": true, // Allow JavaScript files
+    "skipLibCheck": true, // Skip type checking of declaration files
+    "strict": false, // Optional: Enable strict type checking (set to true if you want TS strictness)
+    "esModuleInterop": true, // Enable interop between CommonJS and ES Modules
+    "module": "esnext", // Use ESNext module system
+    "moduleResolution": "node", // Use Node.js-style module resolution
+    "resolveJsonModule": true, // Allow importing JSON files
+    "isolatedModules": true, // Ensure compatibility with tools like Babel
+    "jsx": "preserve", // Preserve JSX for Next.js to handle
+    "incremental": true // Speed up compilation with incremental builds
   },
-  "include": ["next-env.d.ts", "**/*.js", "**/*.jsx"],
+  "include": [
+    "next-env.d.ts",
+    "**/*.ts",
+    "**/*.tsx",
+    "**/*.js",
+    "**/*.jsx"
+  ],
   "exclude": ["node_modules"]
 }
