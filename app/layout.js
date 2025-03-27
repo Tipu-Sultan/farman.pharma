@@ -3,6 +3,7 @@ import "./globals.css";
 import Navbar from "@/components/Navbar";
 import { ThemeProvider } from "@/components/theme-provider";
 import ClientProvider from "./ClientProvide";
+import MobileNav from "@/components/MobileNav";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -25,6 +26,7 @@ export default function RootLayout({ children }) {
             <Navbar />
 
             {children}
+            <MobileNav />
           </ThemeProvider>
         </ClientProvider>
       </body>
