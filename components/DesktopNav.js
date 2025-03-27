@@ -18,6 +18,8 @@ import { LogOut } from 'lucide-react'
 const DesktopNav = () => {
   const { data: session, status } = useSession()
 
+  console.log(session)
+
   const navItems = [
     { name: 'Home', href: '/' },
     { name: 'Notes', href: '/notes' },

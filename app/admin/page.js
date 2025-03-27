@@ -1,111 +1,55 @@
-'use client'
+import { getServerSession } from 'next-auth/next'
+import { authOptions } from '@/lib/authOptions'
+import dbConnect from '@/lib/dbConnect'
+import User from '@/models/User'
+import Note from '@/models/Note'
+import Resource from '@/models/Resource'
+import AdminDashboardClient from './AdminDashboardClient'
 
-import { useState } from 'react'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { FileText, Plus, Upload } from 'lucide-react'
+// Helper function to convert ObjectId and dates to strings
+function serializeData(data) {
+  return data.map((item) => ({
+    ...item,
+    _id: item._id.toString(), // Convert ObjectId to string
+    ownerId: item.ownerId?.toString(), // Convert ownerId to string (if exists)
+    createdAt: item.createdAt.toISOString(), // Convert Date to ISO string
+    updatedAt: item.updatedAt.toISOString(), // Convert Date to ISO string
+    lastLogin: item.lastLogin?.toISOString(), // Convert Date to ISO string (if exists)
+  }))
+}
 
-export default function AdminDashboard() {
-  const [notes, setNotes] = useState([
-    { id: 1, title: 'Chemistry Notes', subject: 'Chemistry', date: '2024-03-15' },
-    { id: 2, title: 'Pharmacology Notes', subject: 'Pharmacology', date: '2024-03-14' }
+async function getAdminData() {
+  const session = await getServerSession(authOptions)
+  if (!session || !session.user.isAdmin) throw new Error('Unauthorized')
+
+  await dbConnect()
+
+  const [notes, resources, users] = await Promise.all([
+    Note.find().lean(),
+    Resource.find().lean(),
+    User.find().lean(),
   ])
 
-  const [resources, setResources] = useState([
-    { id: 1, title: 'Textbook PDF', type: 'Book', uploadDate: '2024-03-15' },
-    { id: 2, title: 'Lecture Video', type: 'Video', uploadDate: '2024-03-14' }
-  ])
+  return {
+    notes: serializeData(notes),
+    resources: serializeData(resources),
+    users: serializeData(users),
+  }
+}
+
+export default async function AdminPage() {
+  let adminData
+  try {
+    adminData = await getAdminData()
+  } catch (error) {
+    return <div className="text-center py-20">Error: {error.message}</div>
+  }
 
   return (
-    <div className="min-h-screen pt-20 px-4 sm:px-6 lg:px-8">
+    <section className="min-h-screen pt-20 px-4 sm:px-6 lg:px-8 bg-gradient-to-b from-background to-muted/20">
       <div className="max-w-7xl mx-auto">
-        <h1 className="text-3xl font-bold mb-8">Admin Dashboard</h1>
-
-        <Tabs defaultValue="notes" className="space-y-6">
-          <TabsList>
-            <TabsTrigger value="notes">Manage Notes</TabsTrigger>
-            <TabsTrigger value="resources">Manage Resources</TabsTrigger>
-          </TabsList>
-
-          <TabsContent value="notes">
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center justify-between">
-                  <span>Study Notes</span>
-                  <Button>
-                    <Plus className="h-4 w-4 mr-2" />
-                    Add New Note
-                  </Button>
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  {notes.map((note) => (
-                    <div
-                      key={note.id}
-                      className="flex items-center justify-between p-4 border rounded-lg"
-                    >
-                      <div className="flex items-center gap-4">
-                        <FileText className="h-6 w-6 text-primary" />
-                        <div>
-                          <h3 className="font-medium">{note.title}</h3>
-                          <p className="text-sm text-muted-foreground">
-                            {note.subject} • {note.date}
-                          </p>
-                        </div>
-                      </div>
-                      <div className="flex gap-2">
-                        <Button variant="outline" size="sm">Edit</Button>
-                        <Button variant="destructive" size="sm">Delete</Button>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
-          </TabsContent>
-
-          <TabsContent value="resources">
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center justify-between">
-                  <span>Learning Resources</span>
-                  <Button>
-                    <Upload className="h-4 w-4 mr-2" />
-                    Upload Resource
-                  </Button>
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  {resources.map((resource) => (
-                    <div
-                      key={resource.id}
-                      className="flex items-center justify-between p-4 border rounded-lg"
-                    >
-                      <div className="flex items-center gap-4">
-                        <FileText className="h-6 w-6 text-primary" />
-                        <div>
-                          <h3 className="font-medium">{resource.title}</h3>
-                          <p className="text-sm text-muted-foreground">
-                            {resource.type} • {resource.uploadDate}
-                          </p>
-                        </div>
-                      </div>
-                      <div className="flex gap-2">
-                        <Button variant="outline" size="sm">Edit</Button>
-                        <Button variant="destructive" size="sm">Delete</Button>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
-          </TabsContent>
-        </Tabs>
+        <AdminDashboardClient initialData={adminData} />
       </div>
-    </div>
+    </section>
   )
 }
