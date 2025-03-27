@@ -1,0 +1,14 @@
+{
+  "compilerOptions": {
+    "baseUrl": ".", // Set the base directory to the root of your project
+    "paths": {
+      "@/*": ["./*"] // Map @/ to the root directory
+    },
+    "module": "esnext",
+    "jsx": "preserve",
+    "allowJs": true,
+    "esModuleInterop": true,
+  },
+  "include": ["next-env.d.ts", "**/*.js", "**/*.jsx"],
+  "exclude": ["node_modules"]
+}
