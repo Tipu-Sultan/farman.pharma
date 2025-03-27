@@ -20,6 +20,8 @@ const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false)
   const { data: session, status } = useSession()
 
+  console.log(session)
+
   const navItems = [
     { name: 'Home', href: '/' },
     { name: 'Notes', href: '/notes' },
