@@ -1,5 +1,5 @@
 // models/Note.js
-import mongoose from 'mongoose'
+import mongoose from "mongoose";
 
 const noteSchema = new mongoose.Schema({
   title: {
@@ -26,6 +26,11 @@ const noteSchema = new mongoose.Schema({
     type: String, // URL to the note file, if stored externally
     required: false,
   },
+  ownerId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "User",
+    required: true,
+  },
   createdAt: {
     type: Date,
     default: Date.now,
@@ -34,8 +39,8 @@ const noteSchema = new mongoose.Schema({
     type: Date,
     default: Date.now,
   },
-})
+});
 
-const Note =  mongoose.models.Note || mongoose.model('Note', noteSchema)
+const Note = mongoose.models.Note || mongoose.model("Note", noteSchema);
 
-export default Note
+export default Note;

@@ -4,10 +4,30 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
-import { GraduationCap, Book, FileText, ArrowRight, Microscope, Award, Beaker } from 'lucide-react'
+import {
+  GraduationCap,
+  Book,
+  FileText,
+  ArrowRight,
+  Microscope,
+  Award,
+  Beaker,
+  Instagram,
+  Twitter,
+  Facebook,
+  Linkedin,
+} from 'lucide-react'
 import { motion } from 'framer-motion'
 
 export default function Hero() {
+  // Sample social media data (replace with real data via API if desired)
+  const socialLinks = [
+    { platform: 'Instagram', icon: Instagram, followers: '12.5K', url: 'https://www.instagram.com/fk_science/' },
+    { platform: 'Twitter', icon: Twitter, followers: '8.3K', url: 'https://twitter.com/farman_khan' },
+    { platform: 'Facebook', icon: Facebook, followers: '15K', url: 'https://facebook.com/farman.khan' },
+    { platform: 'LinkedIn', icon: Linkedin, followers: '5.2K', url: 'https://linkedin.com/in/farman-khan' },
+  ]
+
   return (
     <section className="relative min-h-[calc(100vh-4rem)] bg-gradient-to-br from-background via-muted/20 to-background overflow-hidden">
       {/* Background Pattern */}
@@ -16,7 +36,7 @@ export default function Hero() {
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-16 sm:pt-20 lg:pt-24 pb-12">
         <div className="flex flex-col lg:grid lg:grid-cols-2 gap-8 lg:gap-12 items-center">
           {/* Content Section */}
-          <motion.div 
+          <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8 }}
@@ -27,14 +47,14 @@ export default function Hero() {
                 <GraduationCap className="h-3 w-3 sm:h-4 sm:w-4" />
                 D. Pharma Student
               </span>
-              
+
               <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight leading-tight">
                 Modh. Farman Khan
                 <span className="block text-primary mt-1 sm:mt-2 text-2xl sm:text-3xl md:text-4xl lg:text-5xl">
                   Future Pharmacist
                 </span>
               </h1>
-              
+
               <p className="text-base sm:text-lg text-muted-foreground max-w-xl leading-relaxed">
                 Passionate about pharmaceutical sciences and dedicated to advancing healthcare through innovative research and practical solutions.
               </p>
@@ -42,8 +62,8 @@ export default function Hero() {
 
             {/* Buttons */}
             <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
-              <Button 
-                size="lg" 
+              <Button
+                size="lg"
                 className="group hover:scale-105 transition-transform duration-200 w-full sm:w-auto"
                 asChild
               >
@@ -53,9 +73,9 @@ export default function Hero() {
                   <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
                 </Link>
               </Button>
-              <Button 
-                variant="outline" 
-                size="lg" 
+              <Button
+                variant="outline"
+                size="lg"
                 className="hover:scale-105 transition-transform duration-200 w-full sm:w-auto"
                 asChild
               >
@@ -66,35 +86,31 @@ export default function Hero() {
               </Button>
             </div>
 
-            {/* Stats */}
-            <div className="grid grid-cols-3 gap-3 sm:gap-4 pt-6 sm:pt-8">
-              {[
-                { icon: Award, title: "Top Student", desc: "Academic Excellence" },
-                { icon: Microscope, title: "Research", desc: "Lab Projects" },
-                { icon: Beaker, title: "Publications", desc: "3 Papers" }
-              ].map((stat, index) => (
-                <motion.div
-                  key={index}
+            {/* Social Media Icons */}
+            <div className="flex flex-wrap gap-4 pt-6 sm:pt-8">
+              {socialLinks.map((social, index) => (
+                <motion.a
+                  key={social.platform}
+                  href={social.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: index * 0.2, duration: 0.5 }}
+                  className="group flex items-center gap-2 bg-card/80 backdrop-blur-sm border border-border/50 rounded-lg p-2 sm:p-3 hover:bg-muted hover:shadow-md transition-all duration-300"
                 >
-                  <Card className="border-none bg-card/80 backdrop-blur-sm hover:bg-card transition-colors">
-                    <CardContent className="p-3 sm:p-4 text-center space-y-1 sm:space-y-2">
-                      <div className="bg-primary/10 text-primary rounded-full p-1.5 sm:p-2 w-8 h-8 sm:w-10 sm:h-10 mx-auto">
-                        <stat.icon className="h-4 w-4 sm:h-5 sm:w-5" />
-                      </div>
-                      <h3 className="font-semibold text-xs sm:text-sm">{stat.title}</h3>
-                      <p className="text-[10px] sm:text-xs text-muted-foreground">{stat.desc}</p>
-                    </CardContent>
-                  </Card>
-                </motion.div>
+                  <social.icon className="h-5 w-5 sm:h-6 sm:w-6 text-primary group-hover:scale-110 transition-transform" />
+                  <div>
+                    <p className="text-xs sm:text-sm font-medium">{social.platform}</p>
+                    <p className="text-[10px] sm:text-xs text-muted-foreground">{social.followers} Followers</p>
+                  </div>
+                </motion.a>
               ))}
             </div>
           </motion.div>
 
           {/* Image Section */}
-          <motion.div 
+          <motion.div
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.8 }}
@@ -104,7 +120,7 @@ export default function Hero() {
               {/* Decorative Rings */}
               <div className="absolute inset-0 rounded-full bg-gradient-to-tr from-primary/20 to-transparent animate-spin-slow" />
               <div className="absolute inset-4 rounded-full border border-primary/20 animate-pulse" />
-              
+
               {/* Profile Image */}
               <div className="absolute inset-6 rounded-full overflow-hidden shadow-2xl border-2 border-primary/30">
                 <Image
@@ -118,7 +134,7 @@ export default function Hero() {
             </div>
 
             {/* Floating Cards */}
-            <motion.div 
+            <motion.div
               className="absolute top-0 right-0 -mr-16 sm:-mr-20 md:-mr-24 mt-8 sm:mt-10 md:mt-12"
               initial={{ opacity: 0, x: 20 }}
               animate={{ opacity: 1, x: 0 }}
@@ -137,7 +153,7 @@ export default function Hero() {
               </Card>
             </motion.div>
 
-            <motion.div 
+            <motion.div
               className="absolute bottom-0 left-0 -ml-16 sm:-ml-20 md:-ml-24 mb-8 sm:mb-10 md:mb-12"
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
