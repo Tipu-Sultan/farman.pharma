@@ -21,7 +21,7 @@ export default async function NotesPage() {
   const notes = await getNotes()
 
   return (
-    <div className="space-y-8 p-6 min-h-screen">
+    <div className="min-h-screen">
       <NotesClient initialNotes={notes} />
     </div>
   )

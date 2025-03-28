@@ -1,19 +1,16 @@
-// app/api/notes/route.js
 import dbConnect from '@/lib/dbConnect'
 import Note from '@/models/Note'
 import { getServerSession } from 'next-auth/next'
 import { authOptions } from '@/lib/authOptions'
 import cloudinary from '@/lib/cloudinary'
+import { NextResponse } from 'next/server'
 
 export async function POST(request) {
   await dbConnect()
   const session = await getServerSession(authOptions)
 
   if (!session || !session.user?.isAdmin) {
-    return new Response(JSON.stringify({ error: 'Unauthorized' }), {
-      status: 401,
-      headers: { 'Content-Type': 'application/json' },
-    })
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
 
   const formData = await request.formData()
@@ -25,17 +22,16 @@ export async function POST(request) {
   const file = formData.get('file')
 
   if (!title || !description || !type || !date || !subject || !file) {
-    return new Response(JSON.stringify({ error: 'Missing required fields' }), {
-      status: 400,
-      headers: { 'Content-Type': 'application/json' },
-    })
+    return NextResponse.json({ error: 'Missing required fields' }, { status: 400 })
   }
 
-  // Upload file to Cloudinary as raw resource, let Cloudinary generate public_id
+  // Upload file to Cloudinary with sanitized filename (no spaces)
   const fileBuffer = Buffer.from(await file.arrayBuffer())
+  const originalFileName = file.name // e.g., "RHEUMATOID ARTHRITIS PPT NEW.pptx"
+  const sanitizedFileName = originalFileName.replace(/\s+/g, '_') // e.g., "RHEUMATOID_ARTHRITIS_PPT_NEW.pptx"
   const uploadResult = await new Promise((resolve, reject) => {
     cloudinary.uploader.upload_stream(
-      { resource_type: 'raw', folder: 'farman-pharma' }, // Omit public_id to let Cloudinary generate it
+      { resource_type: 'raw', folder: 'farman-pharma', public_id: sanitizedFileName },
       (error, result) => {
         if (error) reject(error)
         else resolve(result)
@@ -63,8 +59,5 @@ export async function POST(request) {
     date: note.date.toISOString(),
   }
 
-  return new Response(JSON.stringify(serializedNote), {
-    status: 201,
-    headers: { 'Content-Type': 'application/json' },
-  })
+  return NextResponse.json(serializedNote, { status: 201 })
 }

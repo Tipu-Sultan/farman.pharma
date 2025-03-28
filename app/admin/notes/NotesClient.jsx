@@ -36,7 +36,7 @@ export default function NotesClient({ initialNotes }) {
 
   const handleEdit = (id) => {
     setLoadingStates((prev) => ({ ...prev, [id]: { edit: true } }))
-    router.push(`/admin/notes/edit/${id}`) // Navigate to edit page
+    router.push(`/admin/notes/edit/${id}`) 
   }
 
   return (

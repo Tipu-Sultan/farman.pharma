@@ -30,7 +30,7 @@ export default function NotesClient({ initialNotes }) {
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {filteredNotes.map((note) => (
-          <Card key={note.id} className="hover:shadow-lg transition-shadow flex flex-col">
+          <Card key={note._id} className="hover:shadow-lg transition-shadow flex flex-col">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 {note.type === 'PDF' ? (
@@ -49,11 +49,13 @@ export default function NotesClient({ initialNotes }) {
                 <span className="bg-primary/10 text-primary px-2 py-1 rounded">
                   {note.subject}
                 </span>
-                <span className="text-muted-foreground">{note.date}</span>
+                <span className="text-muted-foreground">
+                  {new Date(note.date).toLocaleDateString()}
+                </span>
               </div>
               {note.fileUrl && (
                 <Button asChild variant="outline" size="sm" className="w-full">
-                  <a href={note.fileUrl} download={`${note.title}.${note.type.toLowerCase()}`} target="_blank" rel="noopener noreferrer">
+                  <a href={note.fileUrl} download target="_blank" rel="noopener noreferrer">
                     <Download className="h-4 w-4 mr-2" />
                     Download
                   </a>

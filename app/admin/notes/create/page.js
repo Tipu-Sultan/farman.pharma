@@ -21,7 +21,6 @@ export default function CreateNotePage() {
   const [file, setFile] = useState(null)
   const [uploading, setUploading] = useState(false)
   const router = useRouter()
-  const { data: session } = useSession()
 
   const handleFileChange = (e) => {
     const selectedFile = e.target.files[0]
@@ -71,6 +70,7 @@ export default function CreateNotePage() {
         })
         setFile(null)
         router.push('/admin/notes')
+        router.refresh()
       } else {
         throw new Error('Failed to create note')
       }
