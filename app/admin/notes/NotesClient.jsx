@@ -76,8 +76,18 @@ export default function NotesClient({ initialNotes }) {
                       <div className="mt-1 flex flex-wrap gap-2">
                         <Badge variant="outline">{note.type}</Badge>
                         <Badge variant="secondary">
-                          {new Date(note.date).toLocaleDateString()}
+                          {note.updatedAt
+                            ? new Date(note.updatedAt).toLocaleString('en-GB', {
+                                day: '2-digit',
+                                month: '2-digit',
+                                year: '2-digit',
+                                hour: '2-digit',
+                                minute: '2-digit',
+                                second: '2-digit',
+                            })
+                            : 'Never'}
                         </Badge>
+
                         <Badge variant="outline">By: {note.ownerName}</Badge>
                       </div>
                     </div>

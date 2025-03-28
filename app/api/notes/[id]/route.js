@@ -101,7 +101,7 @@ export async function PUT(request, { params }) {
 
   const updatedNote = await Note.findByIdAndUpdate(
     params.id,
-    { title, description, type, date, subject, fileUrl },
+    { title, description, type, date, subject, fileUrl, updatedAt: Date.now() }, // Manually set updatedAt
     { new: true }
   ).lean()
 

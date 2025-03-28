@@ -47,6 +47,10 @@ const resourceSchema = new mongoose.Schema({
   },
 })
 
+resourceSchema.pre('save', function (next) {
+  this.updatedAt = Date.now()
+  next()
+})
 
 const Resource = mongoose.models.Resource || mongoose.model("Resource", resourceSchema);
 
