@@ -10,9 +10,9 @@ async function fetchNotes() {
     title: note.title,
     description: note.description,
     type: note.type,
-    date: note.date.toISOString().split('T')[0], 
     subject: note.subject,
-    fileUrl: note.fileUrl, 
+    fileUrl: note.fileUrl,
+    createdAt: note.createdAt.toISOString(),
   }))
 }
 

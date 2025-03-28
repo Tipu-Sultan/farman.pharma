@@ -13,7 +13,6 @@ async function getNotes() {
     ownerName: note.ownerId?.name || 'Unknown',
     createdAt: note.createdAt.toISOString(),
     updatedAt: note.updatedAt.toISOString(),
-    date: note.date.toISOString(),
   }))
 }
 

@@ -23,7 +23,6 @@ export default function EditNotePage() {
         const note = await res.json()
         setEditNote({
           ...note,
-          date: new Date(note.date).toISOString().split('T')[0], // Format date for input
         })
       }
     }
@@ -53,7 +52,6 @@ export default function EditNotePage() {
     formData.append('title', editNote.title)
     formData.append('description', editNote.description)
     formData.append('type', editNote.type)
-    formData.append('date', editNote.date)
     formData.append('subject', editNote.subject)
     if (file) formData.append('file', file) // Only append file if a new one is selected
 
@@ -124,15 +122,6 @@ export default function EditNotePage() {
                 <SelectItem value="PPT">PPT</SelectItem>
               </SelectContent>
             </Select>
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="date">Date</Label>
-            <Input
-              id="date"
-              type="date"
-              value={editNote.date}
-              onChange={(e) => setEditNote({ ...editNote, date: e.target.value })}
-            />
           </div>
           <div className="space-y-2">
             <Label htmlFor="file">Upload New File (PDF, DOC, PPT) - Optional</Label>

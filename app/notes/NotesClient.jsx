@@ -1,14 +1,15 @@
-// app/notes/NotesClient.jsx
 'use client'
 
 import { useState } from 'react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
-import { Book, FileText, Search, Download } from 'lucide-react'
+import { Book, FileText, Search, Download, Eye } from 'lucide-react'
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
 
 export default function NotesClient({ initialNotes }) {
   const [searchTerm, setSearchTerm] = useState('')
+  const [previewFile, setPreviewFile] = useState(null)
 
   const filteredNotes = initialNotes.filter(note =>
     note.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -30,7 +31,7 @@ export default function NotesClient({ initialNotes }) {
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {filteredNotes.map((note) => (
-          <Card key={note._id} className="hover:shadow-lg transition-shadow flex flex-col">
+          <Card key={note.id} className="hover:shadow-lg transition-shadow flex flex-col">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 {note.type === 'PDF' ? (
@@ -50,16 +51,36 @@ export default function NotesClient({ initialNotes }) {
                   {note.subject}
                 </span>
                 <span className="text-muted-foreground">
-                  {new Date(note.date).toLocaleDateString()}
+                  {new Date(note.createdAt).toLocaleDateString()}
                 </span>
               </div>
               {note.fileUrl && (
-                <Button asChild variant="outline" size="sm" className="w-full">
-                  <a href={note.fileUrl} download target="_blank" rel="noopener noreferrer">
-                    <Download className="h-4 w-4 mr-2" />
-                    Download
-                  </a>
-                </Button>
+                <div className="flex gap-2">
+                  <Button asChild variant="outline" size="sm" className="w-full">
+                    <a href={note.fileUrl} download target="_blank" rel="noopener noreferrer">
+                      <Download className="h-4 w-4 mr-2" />
+                      Download
+                    </a>
+                  </Button>
+                  <Dialog>
+                    <DialogTrigger asChild>
+                      <Button variant="outline" size="sm" className="w-full" onClick={() => setPreviewFile(note.fileUrl)}>
+                        <Eye className="h-4 w-4 mr-2" />
+                        Preview
+                      </Button>
+                    </DialogTrigger>
+                    <DialogContent className="max-w-3xl w-full">
+                      <DialogHeader>
+                        <DialogTitle>Preview: {note.title}</DialogTitle>
+                      </DialogHeader>
+                      <iframe
+                        src={`https://docs.google.com/gview?url=${previewFile}&embedded=true`}
+                        width="100%"
+                        height="500px"
+                      ></iframe>
+                    </DialogContent>
+                  </Dialog>
+                </div>
               )}
             </CardContent>
           </Card>

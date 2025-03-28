@@ -30,83 +30,94 @@ export async function GET(request, { params }) {
 }
 
 export async function PUT(request, { params }) {
-  await dbConnect()
-  const session = await getServerSession(authOptions)
+  await dbConnect();
+  const session = await getServerSession(authOptions);
+
   if (!session || !session.user?.isAdmin) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
-  const formData = await request.formData()
-  const title = formData.get('title')
-  const description = formData.get('description')
-  const type = formData.get('type')
-  const date = formData.get('date')
-  const subject = formData.get('subject')
-  const file = formData.get('file')
+  const formData = await request.formData();
+  const title = formData.get('title');
+  const description = formData.get('description');
+  const type = formData.get('type');
+  const date = formData.get('date');
+  const subject = formData.get('subject');
+  const file = formData.get('file');
 
-  if (!title || !description || !type || !date || !subject) {
-    return NextResponse.json({ error: 'Missing required fields' }, { status: 400 })
+  if (!title || !description || !type || !subject) {
+    return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
   }
 
-  const existingNote = await Note.findById(params.id)
+  const existingNote = await Note.findById(params.id);
   if (!existingNote) {
-    return NextResponse.json({ error: 'Note not found' }, { status: 404 })
+    return NextResponse.json({ error: 'Note not found' }, { status: 404 });
   }
 
-  let fileUrl = existingNote.fileUrl
+  let fileUrl = existingNote.fileUrl;
+
   if (file && file.size > 0) {
-    // Delete the old file from Cloudinary
+    // **Delete the old file from Cloudinary using working logic from DELETE**
     if (fileUrl) {
       try {
-        const urlParts = fileUrl.split('/')
-        const versionIndex = urlParts.findIndex(part => part.startsWith('v'))
-        let publicId = urlParts.slice(versionIndex + 1).join('/')
-        console.log('File URL:', fileUrl)
-        console.log('Computed publicId:', publicId)
+        const urlParts = fileUrl.split('/');
+        const versionIndex = urlParts.findIndex(part => part.startsWith('v'));
+        let publicId = urlParts.slice(versionIndex + 1).join('/');
 
-        let result = await cloudinary.uploader.destroy(publicId, { resource_type: 'raw' })
+        console.log('File URL:', fileUrl);
+        console.log('Computed publicId:', publicId);
+
+        let result = await cloudinary.uploader.destroy(publicId, { resource_type: 'raw' });
+
         if (result.result !== 'ok') {
-          // Fallback for older files with spaces or %20
-          const decodedPublicId = decodeURIComponent(publicId).replace(/_/g, ' ')
-          console.log('Trying decoded publicId with spaces:', decodedPublicId)
-          result = await cloudinary.uploader.destroy(decodedPublicId, { resource_type: 'raw' })
+          // Fallback: Try decoded public_id with spaces instead of underscores or %20
+          const decodedPublicId = decodeURIComponent(publicId).replace(/_/g, ' ');
+          console.log('Trying decoded publicId with spaces:', decodedPublicId);
+          result = await cloudinary.uploader.destroy(decodedPublicId, { resource_type: 'raw' });
+
           if (result.result !== 'ok') {
-            console.error('Cloudinary deletion failed:', result)
-          } else {
-            console.log('Old file deleted successfully:', decodedPublicId)
+            // Additional fallback for %20-encoded files
+            const encodedPublicId = publicId.replace(/ /g, '%20');
+            console.log('Trying %20-encoded publicId:', encodedPublicId);
+            result = await cloudinary.uploader.destroy(encodedPublicId, { resource_type: 'raw' });
+
+            if (result.result !== 'ok') {
+              console.error('Cloudinary deletion failed:', result);
+            }
           }
-        } else {
-          console.log('Old file deleted successfully:', publicId)
         }
+        console.log('Cloudinary file deleted successfully:', publicId);
       } catch (error) {
-        console.error('Error deleting old file from Cloudinary:', error)
+        console.error('Error deleting file from Cloudinary:', error);
       }
     }
 
-    // Upload the new file with sanitized filename (spaces replaced with underscores)
-    const fileBuffer = Buffer.from(await file.arrayBuffer())
-    const originalFileName = file.name
-    const sanitizedFileName = originalFileName.replace(/\s+/g, '_') // e.g., "Road jameen.pdf" → "Road_jameen.pdf"
+    // **Upload the new file**
+    const fileBuffer = Buffer.from(await file.arrayBuffer());
+    const originalFileName = file.name.replace(/\s+/g, '_'); // Replace spaces with underscores
+
     const uploadResult = await new Promise((resolve, reject) => {
       cloudinary.uploader.upload_stream(
-        { resource_type: 'raw', folder: 'farman-pharma', public_id: sanitizedFileName },
+        { resource_type: 'raw', folder: 'farman-pharma', public_id: originalFileName },
         (error, result) => {
-          if (error) reject(error)
-          else resolve(result)
+          if (error) reject(error);
+          else resolve(result);
         }
-      ).end(fileBuffer)
-    })
-    fileUrl = uploadResult.secure_url
+      ).end(fileBuffer);
+    });
+
+    fileUrl = uploadResult.secure_url;
   }
 
+  // **Update the note**
   const updatedNote = await Note.findByIdAndUpdate(
     params.id,
-    { title, description, type, date, subject, fileUrl, updatedAt: Date.now() }, // Manually set updatedAt
+    { title, description, type, date, subject, fileUrl, updatedAt: Date.now() },
     { new: true }
-  ).lean()
+  ).lean();
 
   if (!updatedNote) {
-    return NextResponse.json({ error: 'Failed to update note' }, { status: 500 })
+    return NextResponse.json({ error: 'Failed to update note' }, { status: 500 });
   }
 
   const serializedNote = {
@@ -115,11 +126,11 @@ export async function PUT(request, { params }) {
     ownerId: updatedNote.ownerId?.toString(),
     createdAt: updatedNote.createdAt.toISOString(),
     updatedAt: updatedNote.updatedAt.toISOString(),
-    date: updatedNote.date.toISOString(),
-  }
+  };
 
-  return NextResponse.json(serializedNote, { status: 200 })
+  return NextResponse.json(serializedNote, { status: 200 });
 }
+
 
 export async function DELETE(request, { params }) {
   await dbConnect()

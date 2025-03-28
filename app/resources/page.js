@@ -1,14 +1,16 @@
+// app/resources/page.js
 import dbConnect from '@/lib/dbConnect'
 import Resource from '@/models/Resource'
 import ResourcesClient from './ResourcesClient'
 
 async function getResources() {
   await dbConnect()
-  const resources = await Resource.find().lean() // Use .lean() for plain JS objects
+  const resources = await Resource.find().lean()
   return {
-    books: resources.filter((r) => r.category === 'books'),
-    videos: resources.filter((r) => r.category === 'videos'),
-    papers: resources.filter((r) => r.category === 'papers'),
+    books: resources.filter((r) => r.type === 'book'),
+    videos: resources.filter((r) => r.type === 'video'),
+    papers: resources.filter((r) => r.type === 'paper'),
+    blogs: resources.filter((r) => r.type === 'blog'),
   }
 }
 

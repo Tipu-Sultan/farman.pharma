@@ -20,8 +20,10 @@ export async function GET(request, { params }) {
   const serializedResource = {
     ...resource,
     _id: resource._id.toString(),
+    ownerId: resource.ownerId?.toString(),
     createdAt: resource.createdAt.toISOString(),
     updatedAt: resource.updatedAt.toISOString(),
+    metadata: resource.metadata instanceof Map ? Object.fromEntries(resource.metadata) : resource.metadata,
   }
 
   return NextResponse.json(serializedResource, { status: 200 })
@@ -37,11 +39,25 @@ export async function PUT(request, { params }) {
     )
   }
 
-  const body = await request.json()
+  const formData = await request.formData()
+  const title = formData.get('title')
+  const type = formData.get('type')
+  const link = formData.get('link')
+  const metadata = formData.get('metadata') ? JSON.parse(formData.get('metadata')) : undefined // Optional update
+
+  if (!title || !type || !link) {
+    return NextResponse.json({ error: 'Missing required fields' }, { status: 400 })
+  }
+
   const resource = await Resource.findByIdAndUpdate(
     params.id,
-    { ...body, updatedAt: new Date() },
-    { new: true, runValidators: true }
+    {
+      title,
+      type,
+      link,
+      ...(metadata && { metadata }), // Only update metadata if provided
+    },
+    { new: true, runValidators: true, timestamps: true } // Ensure timestamps update
   ).lean()
 
   if (!resource) {
@@ -51,8 +67,10 @@ export async function PUT(request, { params }) {
   const serializedResource = {
     ...resource,
     _id: resource._id.toString(),
+    ownerId: resource.ownerId?.toString(),
     createdAt: resource.createdAt.toISOString(),
     updatedAt: resource.updatedAt.toISOString(),
+    metadata: resource.metadata instanceof Map ? Object.fromEntries(resource.metadata) : resource.metadata,
   }
 
   return NextResponse.json(serializedResource, { status: 200 })

@@ -68,7 +68,7 @@ export default function UserItem({ user: initialUser }) {
         <UserIcon className="h-8 w-8 text-primary" />
         <div>
           <h3 className="text-lg font-medium">{user.name}</h3>
-          <p className="text-sm text-gray-600">{user.email}</p>
+          <p className="text-sm">{user.email}</p>
           <div className="mt-1 flex flex-wrap gap-2">
             {user.isAdmin && (
               <Badge variant="secondary">{user.adminRole || "Admin"}</Badge>
@@ -79,7 +79,7 @@ export default function UserItem({ user: initialUser }) {
                 {user.permissions.map((permission) => (
                   <span
                     key={permission}
-                    className="text-xs bg-gray-100 text-gray-700 px-1.5 py-0.5 rounded"
+                    className="text-xs bg-yellow-300 text-gray-900 px-1.5 py-0.5 rounded"
                   >
                     {permission}
                   </span>
