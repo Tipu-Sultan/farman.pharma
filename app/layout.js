@@ -1,3 +1,4 @@
+// app/layout.js
 import { Inter } from "next/font/google";
 import "./globals.css";
 import Navbar from "@/components/Navbar";
@@ -13,6 +14,8 @@ export const metadata = {
 };
 
 export default function RootLayout({ children }) {
+  const isAdminRoute = children?.props?.childProp?.segment?.startsWith('admin') || false;
+
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={inter.className}>
@@ -23,10 +26,11 @@ export default function RootLayout({ children }) {
             enableSystem
             disableTransitionOnChange
           >
-            <Navbar />
-
-            {children}
-            <MobileNav />
+            {!isAdminRoute && <Navbar />}
+            <div className={isAdminRoute ? "" : "pt-16"}> {/* Add padding-top for non-admin routes */}
+              {children}
+            </div>
+            {!isAdminRoute && <MobileNav />}
           </ThemeProvider>
         </ClientProvider>
       </body>

@@ -35,8 +35,10 @@ export default function NotesClient({ initialNotes }) {
               <CardTitle className="flex items-center gap-2">
                 {note.type === 'PDF' ? (
                   <FileText className="h-5 w-5 text-red-500" />
+                ) : note.type === 'DOC' ? (
+                  <FileText className="h-5 w-5 text-blue-500" />
                 ) : (
-                  <Book className="h-5 w-5 text-blue-500" />
+                  <FileText className="h-5 w-5 text-orange-500" /> // PPT
                 )}
                 {note.title}
               </CardTitle>
@@ -51,7 +53,7 @@ export default function NotesClient({ initialNotes }) {
               </div>
               {note.fileUrl && (
                 <Button asChild variant="outline" size="sm" className="w-full">
-                  <a href={note.fileUrl} download target="_blank" rel="noopener noreferrer">
+                  <a href={note.fileUrl} download={`${note.title}.${note.type.toLowerCase()}`} target="_blank" rel="noopener noreferrer">
                     <Download className="h-4 w-4 mr-2" />
                     Download
                   </a>

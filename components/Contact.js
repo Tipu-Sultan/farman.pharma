@@ -75,9 +75,9 @@ export default function Contact() {
               </CardHeader>
               <CardContent>
                 <p className="text-muted-foreground">
-                  123 College Street, Medical Campus
+                  Basara Fatehpur Barabanki , Uttar Pradesh
                   <br />
-                  City, State 12345
+                  Barabanki, Uttar Pradesh 225305
                 </p>
               </CardContent>
             </Card>
@@ -91,7 +91,7 @@ export default function Contact() {
               </CardHeader>
               <CardContent>
                 <p className="text-muted-foreground">
-                  student@pharmacy.edu
+                farmankhan12ab@gmail.com 
                   <br />
                   contact@portfolio.com
                 </p>
@@ -107,9 +107,7 @@ export default function Contact() {
               </CardHeader>
               <CardContent>
                 <p className="text-muted-foreground">
-                  +1 (555) 123-4567
-                  <br />
-                  +1 (555) 987-6543
+                  +91 (734) 815-8118
                 </p>
               </CardContent>
             </Card>

@@ -49,7 +49,8 @@ export default async function ProfilePage() {
   return (
     <section className="min-h-[calc(100vh-4rem)] py-16 sm:py-20 px-4 sm:px-6 lg:px-8 bg-gradient-to-b from-background to-muted/20">
       <div className="max-w-4xl mx-auto">
-\      </div>
+        <ProfileClient profileData={profileData}/>
+      </div>
     </section>
   )
 }

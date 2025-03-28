@@ -1,3 +1,4 @@
+// components/DesktopNav.js
 'use client'
 
 import { useSession, signOut } from 'next-auth/react'
@@ -18,8 +19,6 @@ import { LogOut } from 'lucide-react'
 const DesktopNav = () => {
   const { data: session, status } = useSession()
 
-  console.log(session)
-
   const navItems = [
     { name: 'Home', href: '/' },
     { name: 'Notes', href: '/notes' },
@@ -33,20 +32,17 @@ const DesktopNav = () => {
 
   return (
     <div className="flex items-center space-x-4">
-      {/* Navigation Links - Visible only on desktop (lg and above) */}
-      <div className="hidden lg:flex items-center space-x-4">
+      <div className="hidden lg:flex items-center space-x-6">
         {navItems.map((item) => (
           <Link
             key={item.name}
             href={item.href}
-            className="text-sm hover:text-primary transition-colors"
+            className="text-sm font-medium hover:text-primary transition-colors"
           >
             {item.name}
           </Link>
         ))}
       </div>
-
-      {/* Admin Button, Theme Toggle, and Profile/Avatar - Always visible */}
       {status === 'authenticated' ? (
         <>
           {session.user.isAdmin && (
@@ -75,15 +71,11 @@ const DesktopNav = () => {
               </DropdownMenuLabel>
               <DropdownMenuSeparator />
               <DropdownMenuItem asChild>
-                <Link href="/profile" className="w-full">
-                  Profile
-                </Link>
+                <Link href="/profile" className="w-full">Profile</Link>
               </DropdownMenuItem>
               {session.user.isAdmin && (
                 <DropdownMenuItem asChild>
-                  <Link href="/admin" className="w-full">
-                    Admin Dashboard
-                  </Link>
+                  <Link href="/admin" className="w-full">Admin Dashboard</Link>
                 </DropdownMenuItem>
               )}
               <DropdownMenuSeparator />
