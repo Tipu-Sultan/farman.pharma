@@ -3,7 +3,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { UserIcon, Edit, Trash2 } from "lucide-react";
+import { UserIcon, Edit, Trash2, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
@@ -27,9 +27,11 @@ import {
 export default function UserItem({ user: initialUser }) {
   const [user, setUser] = useState(initialUser);
   const [editUser, setEditUser] = useState(null);
+  const [isloading, setLoading] = useState(null);
   const router = useRouter();
 
   const handleUpdateUser = async () => {
+    setLoading(true);
     const res = await fetch(`/api/users/${editUser._id}`, {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
@@ -42,21 +44,26 @@ export default function UserItem({ user: initialUser }) {
     if (res.ok) {
       const updatedUser = await res.json();
       setUser(updatedUser);
+      setLoading(false);
       setEditUser(null);
       router.refresh(); // Refresh the page to reflect changes
     } else {
+      setLoading(false);
       const errorData = await res.json();
       alert(`Error: ${errorData.error}`); // Basic error feedback
     }
   };
 
   const handleDeleteUser = async () => {
+    setLoading(true);
     const res = await fetch(`/api/users/${user._id}`, {
       method: "DELETE",
     });
     if (res.ok) {
+      setLoading(false);
       router.refresh(); // Refresh the page to reflect deletion
     } else {
+      setLoading(false);
       const errorData = await res.json();
       alert(`Error: ${errorData.error}`); // Basic error feedback
     }
@@ -176,14 +183,23 @@ export default function UserItem({ user: initialUser }) {
                 </div>
                 <Button
                   onClick={handleUpdateUser}
+                  disabled={isloading}
                   className="w-full bg-primary hover:bg-primary/90"
                 >
-                  Save
+                  {isloading ? (
+                    <>
+                      <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                      Saving...
+                    </>
+                  ) : (
+                    "Save"
+                  )}
                 </Button>
               </div>
             )}
           </DialogContent>
         </Dialog>
+        
         <Button
           variant="destructive"
           size="sm"

@@ -47,7 +47,7 @@ const DesktopNav = () => {
         <>
           {session.user.isAdmin && (
             <Button asChild variant="outline" size="sm">
-              <Link href="/admin">Admin</Link>
+              <Link href="/admin/dashboard">Admin</Link>
             </Button>
           )}
           <ModeToggle />
@@ -75,7 +75,7 @@ const DesktopNav = () => {
               </DropdownMenuItem>
               {session.user.isAdmin && (
                 <DropdownMenuItem asChild>
-                  <Link href="/admin" className="w-full">Admin Dashboard</Link>
+                  <Link href="/admin/dashboard" className="w-full">Admin Dashboard</Link>
                 </DropdownMenuItem>
               )}
               <DropdownMenuSeparator />

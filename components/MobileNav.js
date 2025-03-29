@@ -112,9 +112,9 @@ const MobileNav = () => {
                 ))}
                 {status === "authenticated" && session.user.isAdmin && (
                   <Link
-                    href="/admin"
+                    href="/admin/dashboard"
                     className={`flex items-center gap-3 px-4 py-3 text-base font-medium rounded-lg transition-colors ${
-                      pathname === "/admin"
+                      pathname === "/admin/dashboard"
                         ? "bg-muted text-primary"
                         : "hover:bg-muted hover:text-primary"
                     }`}

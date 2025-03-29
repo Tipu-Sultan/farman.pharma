@@ -15,7 +15,7 @@ export default function Login() {
   const handleGoogleSignIn = async () => {
     setIsLoading(true)
     try {
-      await signIn('google', { callbackUrl: '/admin' })
+      await signIn('google', { callbackUrl: '/admin/dashboard' })
     } catch (error) {
       console.error('Google sign-in error:', error)
       setIsLoading(false) // Reset loading on error

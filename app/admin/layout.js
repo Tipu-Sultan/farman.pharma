@@ -45,7 +45,7 @@ export default function AdminLayout({ children }) {
     }
   
     const navItems = [
-      { name: 'Dashboard', href: '/admin' },
+      { name: 'Dashboard', href: '/admin/dashboard' },
       { name: 'Notes', href: '/admin/notes' },
       { name: 'Resources', href: '/admin/resources' },
       ...(isSuperadmin ? [{ name: 'Users', href: '/admin/users' }] : []), // Show Users link only for superadmins
