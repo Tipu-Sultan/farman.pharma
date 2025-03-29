@@ -29,7 +29,7 @@ export default function RootLayout({ children }) {
           >
             <Toaster/>
             {!isAdminRoute && <Navbar />}
-            <div className={isAdminRoute ? "" : "pt-16"}> {/* Add padding-top for non-admin routes */}
+            <div className={isAdminRoute ? "" : "pt-16 pb-16"}> {/* Add padding-top for non-admin routes */}
               {children}
             </div>
             {!isAdminRoute && <MobileNav />}
