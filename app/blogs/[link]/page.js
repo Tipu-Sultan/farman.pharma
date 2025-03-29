@@ -45,7 +45,7 @@ export default async function BlogPage({ params }) {
           size="sm"
           className="text-primary hover:text-primary/80"
         >
-          <Link href={'https://farman-pharma.vercel.app/resources?tab=blogs'}>
+          <Link href={`${process.env.NEXTAUTH_URL}/resources?tab=blogs`}>
           <ArrowLeft className="h-4 w-4" />
           Back to Blogs
           </Link>
@@ -77,7 +77,7 @@ export default async function BlogPage({ params }) {
           size="sm"
           className="text-primary hover:text-primary/80"
         >
-          <Link href={'https://farman-pharma.vercel.app/resources?tab=blogs'}>
+          <Link href={`${process.env.NEXTAUTH_URL}/resources?tab=blogs`}>
           <ArrowLeft className="h-4 w-4" />
           Previous to Blogs
           </Link>

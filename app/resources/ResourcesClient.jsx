@@ -1,40 +1,36 @@
 "use client";
 
 import { useState } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Input } from "@/components/ui/input";
 import {
   BookOpen,
   VideoIcon,
   PaperclipIcon,
-  Edit2Icon,
   Search,
-  Link as LinkIcon,
-  Download,
-  Play,
+  Image as ImageIcon,
+  Download as DownloadIcon,
 } from "lucide-react";
 import { motion } from "framer-motion";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
+  DialogDescription,
 } from "@/components/ui/dialog";
+import ResourceCard from "./ResourceCard";
 import VideoPlayer from "./VideoPlayer";
 import { useRouter, useSearchParams } from "next/navigation";
-import Link from "next/link";
 
 export default function ResourcesClient({ resourcesData }) {
   const [searchTerm, setSearchTerm] = useState("");
+  const [selectedImage, setSelectedImage] = useState(null);
   const [selectedVideo, setSelectedVideo] = useState(null);
   const tabParams = useSearchParams();
   const router = useRouter();
   const currentTab = tabParams.get("tab") || "books";
-
 
   const filterResources = (resources) => {
     return resources.filter((resource) =>
@@ -52,9 +48,9 @@ export default function ResourcesClient({ resourcesData }) {
   const handleTabChange = (value) => {
     router.push(`/resources?tab=${value}`);
   };
+
   return (
-    <>
-      {/* Existing header and search code unchanged */}
+    <div className="container mx-auto px-4 py-8">
       <motion.div
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -65,8 +61,7 @@ export default function ResourcesClient({ resourcesData }) {
           Learning Resources
         </h1>
         <p className="text-base sm:text-lg text-muted-foreground max-w-2xl mx-auto">
-          Explore a curated collection of blogs, videos, books, and research
-          papers for pharmaceutical studies.
+          Explore a curated collection of images, books, videos, papers, and blogs.
         </p>
       </motion.div>
 
@@ -88,13 +83,14 @@ export default function ResourcesClient({ resourcesData }) {
 
       <Tabs defaultValue={currentTab} onValueChange={handleTabChange} className="space-y-6">
         <TabsList className="flex justify-center gap-2 sm:gap-4 bg-transparent p-0">
-          <TabsTrigger value="books">Books</TabsTrigger>
-          <TabsTrigger value="videos">Videos</TabsTrigger>
-          <TabsTrigger value="papers">Papers</TabsTrigger>
-          <TabsTrigger value="blogs">Blogs</TabsTrigger>
+          <TabsTrigger value="images"><ImageIcon className="h-4 w-4 mr-2" />Images</TabsTrigger>
+          <TabsTrigger value="books"><BookOpen className="h-4 w-4 mr-2" />Books</TabsTrigger>
+          <TabsTrigger value="videos"><VideoIcon className="h-4 w-4 mr-2" />Videos</TabsTrigger>
+          <TabsTrigger value="papers"><PaperclipIcon className="h-4 w-4 mr-2" />Papers</TabsTrigger>
+          <TabsTrigger value="blogs"><BookOpen className="h-4 w-4 mr-2" />Blogs</TabsTrigger>
         </TabsList>
 
-        {["books", "videos", "papers", "blogs"].map((type) => (
+        {["images", "books", "videos", "papers", "blogs"].map((type) => (
           <TabsContent key={type} value={type}>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
               {filterResources(resourcesData[type]).map((resource, index) => (
@@ -107,7 +103,13 @@ export default function ResourcesClient({ resourcesData }) {
                   <ResourceCard
                     resource={resource}
                     formatFileSize={formatFileSize}
-                    onPreview={() => setSelectedVideo(resource)}
+                    onPreview={() =>
+                      type === "images"
+                        ? setSelectedImage(resource)
+                        : type === "videos"
+                        ? setSelectedVideo(resource)
+                        : null
+                    }
                   />
                 </motion.div>
               ))}
@@ -116,113 +118,58 @@ export default function ResourcesClient({ resourcesData }) {
         ))}
       </Tabs>
 
+      {/* Image Preview Dialog */}
+      {selectedImage && (
+        <Dialog open={!!selectedImage} onOpenChange={() => setSelectedImage(null)}>
+          <DialogContent className="p-0 border-none max-w-4xl">
+            <DialogHeader className="p-4 bg-muted rounded-t-lg">
+              <DialogTitle>{selectedImage.title}</DialogTitle>
+              <DialogDescription className="text-sm text-muted-foreground">
+                {selectedImage.description || "Click download to save the image"}
+              </DialogDescription>
+            </DialogHeader>
+            <div className="p-4 bg-background">
+              <div className="relative w-full max-h-[70vh] overflow-hidden rounded-lg">
+                <img
+                  src={selectedImage.link}
+                  alt={selectedImage.title}
+                  className="w-full h-full object-contain"
+                />
+              </div>
+              <div className="flex justify-between items-center mt-4">
+                {selectedImage.fileSize && (
+                  <p className="text-sm text-muted-foreground">
+                    Size: {formatFileSize(selectedImage.fileSize)}
+                  </p>
+                )}
+                <div className="flex gap-2">
+                  <Button variant="outline" asChild>
+                    <a href={selectedImage.link} download target="_blank" rel="noopener noreferrer">
+                      <DownloadIcon className="h-4 w-4 mr-2" />
+                      Download
+                    </a>
+                  </Button>
+                  <Button variant="secondary" onClick={() => setSelectedImage(null)}>
+                    Close
+                  </Button>
+                </div>
+              </div>
+            </div>
+          </DialogContent>
+        </Dialog>
+      )}
+
+      {/* Video Preview Dialog */}
       {selectedVideo && (
-        <Dialog
-          open={!!selectedVideo}
-          onOpenChange={() => setSelectedVideo(null)}
-        >
+        <Dialog open={!!selectedVideo} onOpenChange={() => setSelectedVideo(null)}>
           <DialogContent className="p-0 border-none max-w-4xl">
             <DialogHeader className="p-4 bg-muted rounded-lg">
               <DialogTitle>{selectedVideo.title}</DialogTitle>
             </DialogHeader>
-            <VideoPlayer
-              src={selectedVideo.link}
-              title={selectedVideo.title}
-              autoPlay={false}
-            />
+            <VideoPlayer src={selectedVideo.link} title={selectedVideo.title} autoPlay={false} />
           </DialogContent>
         </Dialog>
       )}
-    </>
-  );
-}
-
-function ResourceCard({ resource, formatFileSize, onPreview }) {
-  return (
-    <Card className="group bg-card/90 backdrop-blur-sm border-none shadow-md hover:shadow-xl transition-all duration-300 h-full flex flex-col">
-      <CardHeader className="pb-3">
-        <CardTitle className="flex items-center gap-2 text-lg sm:text-xl font-semibold line-clamp-2">
-          <VideoIcon className="h-5 w-5 sm:h-6 sm:w-6 text-primary flex-shrink-0" />
-          {resource.title}
-        </CardTitle>
-        <Badge variant="secondary" className="mt-2 w-fit">
-          {resource.type.charAt(0).toUpperCase() + resource.type.slice(1)}
-        </Badge>
-      </CardHeader>
-      <CardContent className="flex-grow space-y-2">
-        {resource.type === "video" && (
-          <Button
-            variant="outline"
-            size="sm"
-            className="w-full"
-            onClick={onPreview}
-          >
-            <Play className="h-4 w-4 mr-2" />
-            Preview Video
-          </Button>
-        )}
-        {resource.description && (
-          <p className="text-sm text-muted-foreground">
-            <span className="font-medium">Description:</span>{" "}
-            {resource.description}
-          </p>
-        )}
-        {resource.fileSize && (
-          <p className="text-sm text-muted-foreground">
-            <span className="font-medium">Size:</span>{" "}
-            {formatFileSize(resource.fileSize)}
-          </p>
-        )}
-        {Object.entries(resource.metadata || {}).map(([key, value]) =>
-          key === "content" && resource.type === "blog" ? (
-            <div
-              key={key}
-              className="text-sm text-muted-foreground prose prose-sm max-w-none"
-              dangerouslySetInnerHTML={{
-                __html: value.substring(0, 115) + "...",
-              }}
-            />
-          ) : (
-            <p key={key} className="text-sm text-muted-foreground">
-              <span className="font-medium">
-                {key.charAt(0).toUpperCase() + key.slice(1)}:
-              </span>{" "}
-              {value.substring(0, 50)}
-            </p>
-          )
-        )}
-        <div className="mt-3 space-y-2">
-          {resource.type !== "video" && (
-            <div className="flex gap-2">
-              {(resource.type === "book" || resource.type === "paper") && (
-                <Button asChild variant="outline" size="sm" className="w-full">
-                  <a
-                    href={`${resource.link}?fl_attachment=true`}
-                    download
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    <Download className="h-4 w-4 mr-2" />
-                    Download
-                  </a>
-                </Button>
-              )}
-              <Link
-                href={resource.type === "blog" ? resource.link : "#"}
-                rel={
-                  resource.type === "blog" ? "noopener noreferrer" : undefined
-                }
-                className="inline-flex items-center gap-2 text-primary text-sm sm:text-base font-medium hover:underline group-hover:translate-x-1 transition-transform"
-              >
-                <LinkIcon className="h-4 w-4" />
-                {resource.type === "book" || resource.type === "paper"
-                  ? "View"
-                  : "Read"}
-              </Link>
-            </div>
-          )}
-        </div>
-      </CardContent>
-    </Card>
+    </div>
   );
 }

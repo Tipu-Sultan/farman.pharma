@@ -33,7 +33,7 @@ export default function CreateResourcePage() {
       return
     }
 
-    if (['book', 'video', 'paper'].includes(newResource.type)) {
+    if (['image','book', 'video', 'paper'].includes(newResource.type)) {
       if (!file || !newResource.description) {
         alert('Please upload a file and provide a description.')
         return
@@ -50,7 +50,7 @@ export default function CreateResourcePage() {
     formData.append('title', newResource.title)
     formData.append('type', newResource.type)
 
-    if (['book', 'video', 'paper'].includes(newResource.type)) {
+    if (['image','book', 'video', 'paper'].includes(newResource.type)) {
       formData.append('file', file)
       formData.append('description', newResource.description)
     }
@@ -85,6 +85,29 @@ export default function CreateResourcePage() {
 
   const renderDynamicField = () => {
     switch (newResource.type) {
+      case 'image':
+        return (
+          <>
+            <div className="space-y-2">
+              <Label htmlFor="description">Description</Label>
+              <Textarea
+                id="description"
+                placeholder="Enter book description"
+                value={newResource.description}
+                onChange={(e) => setNewResource({ ...newResource, description: e.target.value })}
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="file">File</Label>
+              <Input
+                id="file"
+                type="file"
+                onChange={(e) => setFile(e.target.files[0])}
+                accept=".jpg,.png,.jpeg,.webp"
+              />
+            </div>
+          </>
+        )
       case 'book':
         return (
           <>
@@ -230,6 +253,7 @@ export default function CreateResourcePage() {
                 <SelectValue placeholder="Select resource type" />
               </SelectTrigger>
               <SelectContent>
+              <SelectItem value="image">Image</SelectItem>
                 <SelectItem value="book">Book</SelectItem>
                 <SelectItem value="video">Video</SelectItem>
                 <SelectItem value="paper">Paper</SelectItem>

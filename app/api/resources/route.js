@@ -50,7 +50,7 @@ export async function POST(request) {
     let link = "";
     let fileSize = 0;
 
-    if (["book", "video", "paper"].includes(type)) {
+    if (["image", "book", "video", "paper"].includes(type)) {
       if (!file || !description) {
         return NextResponse.json(
           { error: "File and description are required for this resource type" },
@@ -70,7 +70,7 @@ export async function POST(request) {
         cloudinary.uploader
           .upload_stream(
             {
-              resource_type: type === "video" ? "video" : "raw",
+              resource_type: ["image", "video"].includes(type) ? type : "raw",
               folder: "farman-pharma",
               public_id: originalFileName,
               format: fileExt,
