@@ -124,7 +124,7 @@ export default function Hero() {
               {/* Profile Image */}
               <div className="absolute inset-6 rounded-full overflow-hidden shadow-2xl border-2 border-primary/30">
                 <Image
-                  src="/assets/farman.jpg"
+                  src="/assets/pharma-farman.jpg"
                   alt="Modh. Farman Khan - Pharmacy Student"
                   fill
                   className="object-cover"
