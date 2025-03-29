@@ -31,9 +31,9 @@ import Link from "next/link";
 export default function ResourcesClient({ resourcesData }) {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedVideo, setSelectedVideo] = useState(null);
-  const searchParams = useSearchParams();
+  const tabParams = useSearchParams();
   const router = useRouter();
-  const currentTab = searchParams.get("tab") || "books";
+  const currentTab = tabParams.get("tab") || "books";
 
 
   const filterResources = (resources) => {
