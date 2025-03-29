@@ -23,9 +23,9 @@ export default function Hero() {
   // Sample social media data (replace with real data via API if desired)
   const socialLinks = [
     { platform: 'Instagram', icon: Instagram, followers: '12.5K', url: 'https://www.instagram.com/fk_science/' },
-    { platform: 'Twitter', icon: Twitter, followers: '8.3K', url: 'https://twitter.com/farman_khan' },
-    { platform: 'Facebook', icon: Facebook, followers: '15K', url: 'https://facebook.com/farman.khan' },
-    { platform: 'LinkedIn', icon: Linkedin, followers: '5.2K', url: 'https://linkedin.com/in/farman-khan' },
+    { platform: 'Twitter', icon: Twitter, followers: '8.3K', url: '#' },
+    { platform: 'Facebook', icon: Facebook, followers: '15K', url: '#' },
+    { platform: 'LinkedIn', icon: Linkedin, followers: '5.2K', url: '#' },
   ]
 
   return (
@@ -48,8 +48,8 @@ export default function Hero() {
                 D. Pharma Student
               </span>
 
-              <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight leading-tight">
-                Modh. Farman Khan
+              <h1 className="text-3xl text-yellow-500 sm:text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight leading-tight">
+                Mohd. Farman Khan
                 <span className="block text-primary mt-1 sm:mt-2 text-2xl sm:text-3xl md:text-4xl lg:text-5xl">
                   Future Pharmacist
                 </span>
@@ -145,7 +145,7 @@ export default function Hero() {
                   <div className="bg-primary/10 text-primary rounded-full p-1.5 sm:p-2">
                     <Award className="h-4 w-4 sm:h-5 sm:w-5" />
                   </div>
-                  <div>
+                  <div className='text-yellow-500'>
                     <p className="font-semibold text-xs sm:text-sm">Dean's List</p>
                     <p className="text-[10px] sm:text-xs text-muted-foreground">2023-2024</p>
                   </div>
@@ -164,8 +164,8 @@ export default function Hero() {
                   <div className="bg-primary/10 text-primary rounded-full p-1.5 sm:p-2">
                     <GraduationCap className="h-4 w-4 sm:h-5 sm:w-5" />
                   </div>
-                  <div>
-                    <p className="font-semibold text-xs sm:text-sm">4.0 GPA</p>
+                  <div className='text-yellow-500'>
+                    <p className="font-semibold text-xs sm:text-sm">7.2 GPA</p>
                     <p className="text-[10px] sm:text-xs text-muted-foreground">Academic Score</p>
                   </div>
                 </CardContent>

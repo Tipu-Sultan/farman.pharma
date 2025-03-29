@@ -7,12 +7,14 @@ import ResourcesClient from './ResourcesClient'
 
 async function getResources() {
   await dbConnect()
-  const resources = await Resource.find().lean()
+  const resources = await Resource.find().populate('ownerId', 'name').lean()
   return resources.map((resource) => ({
     ...resource,
-    _id: resource._id.toString(),
-    createdAt: resource.createdAt.toISOString(),
-    updatedAt: resource.updatedAt.toISOString(),
+      _id: resource._id.toString(),
+      ownerId: resource.ownerId?._id.toString(),
+      ownerName: resource.ownerId?.name || 'Unknown',
+      createdAt: resource.createdAt.toISOString(),
+      updatedAt: resource.updatedAt.toISOString(),
   }))
 }
 
@@ -23,7 +25,7 @@ export default async function ResourcesPage() {
 
   return (
     <div className="space-y-8 p-6 min-h-screen">
-      <ResourcesClient initialResources={resources} isSuperadmin={isSuperadmin} />
+      <ResourcesClient initialResources={resources} adminSession={session} isSuperadmin={isSuperadmin} />
     </div>
   )
 }

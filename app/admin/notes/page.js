@@ -2,6 +2,8 @@
 import dbConnect from '@/lib/dbConnect'
 import Note from '@/models/Note'
 import NotesClient from './NotesClient'
+import { getServerSession } from 'next-auth'
+import { authOptions } from '@/lib/authOptions'
 
 async function getNotes() {
   await dbConnect()
@@ -18,10 +20,12 @@ async function getNotes() {
 
 export default async function NotesPage() {
   const notes = await getNotes()
+    const session = await getServerSession(authOptions)
+    const isSuperadmin = session?.user?.adminRole === 'superadmin'
 
   return (
     <div className="min-h-screen">
-      <NotesClient initialNotes={notes} />
+      <NotesClient initialNotes={notes} adminSession={session} isSuperadmin={isSuperadmin} />
     </div>
   )
 }

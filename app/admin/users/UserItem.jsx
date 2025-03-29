@@ -137,7 +137,7 @@ export default function UserItem({ user: initialUser }) {
                   </Label>
                   <Input
                     id="permissions"
-                    placeholder="e.g., read, write, delete"
+                    placeholder="e.g., create,read,update,delete"
                     value={editUser.permissions.join(", ")} // Display as string
                     onChange={(e) =>
                       setEditUser({

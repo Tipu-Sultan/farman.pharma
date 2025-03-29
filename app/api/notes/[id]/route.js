@@ -33,8 +33,9 @@ export async function PUT(request, { params }) {
   await dbConnect();
   const session = await getServerSession(authOptions);
 
-  if (!session || !session.user?.isAdmin) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  // Ensure the user is both isAdmin and a superadmin
+  if (!session || !session.user?.isAdmin || session.user.adminRole !== 'superadmin') {
+    return NextResponse.json({ error: 'Unauthorized: Admin privileges required' }, { status: 401 });
   }
 
   const formData = await request.formData();
@@ -57,7 +58,7 @@ export async function PUT(request, { params }) {
   let fileUrl = existingNote.fileUrl;
 
   if (file && file.size > 0) {
-    // **Delete the old file from Cloudinary using working logic from DELETE**
+    // **Delete the old file from Cloudinary**
     if (fileUrl) {
       try {
         const urlParts = fileUrl.split('/');
@@ -70,13 +71,11 @@ export async function PUT(request, { params }) {
         let result = await cloudinary.uploader.destroy(publicId, { resource_type: 'raw' });
 
         if (result.result !== 'ok') {
-          // Fallback: Try decoded public_id with spaces instead of underscores or %20
           const decodedPublicId = decodeURIComponent(publicId).replace(/_/g, ' ');
           console.log('Trying decoded publicId with spaces:', decodedPublicId);
           result = await cloudinary.uploader.destroy(decodedPublicId, { resource_type: 'raw' });
 
           if (result.result !== 'ok') {
-            // Additional fallback for %20-encoded files
             const encodedPublicId = publicId.replace(/ /g, '%20');
             console.log('Trying %20-encoded publicId:', encodedPublicId);
             result = await cloudinary.uploader.destroy(encodedPublicId, { resource_type: 'raw' });
@@ -94,7 +93,7 @@ export async function PUT(request, { params }) {
 
     // **Upload the new file**
     const fileBuffer = Buffer.from(await file.arrayBuffer());
-    const originalFileName = file.name.replace(/\s+/g, '_'); // Replace spaces with underscores
+    const originalFileName = file.name.replace(/\s+/g, '_');
 
     const uploadResult = await new Promise((resolve, reject) => {
       cloudinary.uploader.upload_stream(
@@ -131,62 +130,62 @@ export async function PUT(request, { params }) {
   return NextResponse.json(serializedNote, { status: 200 });
 }
 
-
 export async function DELETE(request, { params }) {
-  await dbConnect()
-  const session = await getServerSession(authOptions)
+  await dbConnect();
+  const session = await getServerSession(authOptions);
 
-  if (!session || !session.user?.isAdmin) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+  // Ensure the user is both isAdmin and a superadmin
+  if (!session || !session.user?.isAdmin || session.user.adminRole !== 'superadmin') {
+    return NextResponse.json({ error: 'Unauthorized: Admin privileges required' }, { status: 401 });
   }
 
-  const note = await Note.findById(params.id)
+  const note = await Note.findById(params.id);
   if (!note) {
-    return NextResponse.json({ error: 'Note not found' }, { status: 404 })
+    return NextResponse.json({ error: 'Note not found' }, { status: 404 });
   }
 
   // Delete the file from Cloudinary if it exists
   if (note.fileUrl) {
     try {
-      const urlParts = note.fileUrl.split('/')
-      const versionIndex = urlParts.findIndex(part => part.startsWith('v'))
-      let publicId = urlParts.slice(versionIndex + 1).join('/')
-      console.log('File URL:', note.fileUrl)
-      console.log('Computed publicId:', publicId)
+      const urlParts = note.fileUrl.split('/');
+      const versionIndex = urlParts.findIndex(part => part.startsWith('v'));
+      let publicId = urlParts.slice(versionIndex + 1).join('/');
+      console.log('File URL:', note.fileUrl);
+      console.log('Computed publicId:', publicId);
 
-      let result = await cloudinary.uploader.destroy(publicId, { resource_type: 'raw' })
+      let result = await cloudinary.uploader.destroy(publicId, { resource_type: 'raw' });
       if (result.result !== 'ok') {
-        // Fallback: Try decoded public_id with spaces instead of underscores or %20
-        const decodedPublicId = decodeURIComponent(publicId).replace(/_/g, ' ')
-        console.log('Trying decoded publicId with spaces:', decodedPublicId)
-        result = await cloudinary.uploader.destroy(decodedPublicId, { resource_type: 'raw' })
+        const decodedPublicId = decodeURIComponent(publicId).replace(/_/g, ' ');
+        console.log('Trying decoded publicId with spaces:', decodedPublicId);
+        result = await cloudinary.uploader.destroy(decodedPublicId, { resource_type: 'raw' });
+
         if (result.result !== 'ok') {
-          // Additional fallback for %20-encoded files
-          const encodedPublicId = publicId.replace(/ /g, '%20')
-          console.log('Trying %20-encoded publicId:', encodedPublicId)
-          result = await cloudinary.uploader.destroy(encodedPublicId, { resource_type: 'raw' })
+          const encodedPublicId = publicId.replace(/ /g, '%20');
+          console.log('Trying %20-encoded publicId:', encodedPublicId);
+          result = await cloudinary.uploader.destroy(encodedPublicId, { resource_type: 'raw' });
+
           if (result.result !== 'ok') {
-            console.error('Cloudinary deletion failed:', result)
+            console.error('Cloudinary deletion failed:', result);
             return NextResponse.json(
               { error: 'Failed to delete file from Cloudinary', details: result },
               { status: 500 }
-            )
+            );
           }
         }
       }
-      console.log('Cloudinary file deleted successfully:', publicId)
+      console.log('Cloudinary file deleted successfully:', publicId);
     } catch (error) {
-      console.error('Error deleting file from Cloudinary:', error)
+      console.error('Error deleting file from Cloudinary:', error);
       return NextResponse.json(
         { error: 'Error deleting file from Cloudinary', details: error.message },
         { status: 500 }
-      )
+      );
     }
   }
 
-  await Note.findByIdAndDelete(params.id)
+  await Note.findByIdAndDelete(params.id);
   return NextResponse.json(
     { message: 'Note and associated file deleted successfully' },
     { status: 200 }
-  )
+  );
 }

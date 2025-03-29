@@ -1,13 +1,13 @@
-'use client'
+"use client";
 
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
-import { Badge } from '@/components/ui/badge'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Book, FileText, Mail, Calendar, Shield, User } from 'lucide-react'
-import { motion } from 'framer-motion'
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Badge } from "@/components/ui/badge";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Book, FileText, Mail, Calendar, Shield, User } from "lucide-react";
+import { motion } from "framer-motion";
 
 export default function ProfileClient({ profileData }) {
-  const { user, stats } = profileData
+  const { user, stats } = profileData;
 
   return (
     <motion.div
@@ -26,12 +26,16 @@ export default function ProfileClient({ profileData }) {
             </AvatarFallback>
           </Avatar>
           <div className="text-center sm:text-left space-y-2">
-            <CardTitle className="text-2xl sm:text-3xl font-bold">{user.name}</CardTitle>
-            <p className="text-sm sm:text-base text-muted-foreground">{user.email}</p>
+            <CardTitle className="text-2xl sm:text-3xl font-bold">
+              {user.name}
+            </CardTitle>
+            <p className="text-sm sm:text-base text-muted-foreground">
+              {user.email}
+            </p>
             {user.isAdmin && (
               <Badge variant="secondary" className="mt-2 capitalize">
                 <Shield className="h-4 w-4 mr-1" />
-                {user.adminRole || 'Admin'}
+                {user.adminRole || "Admin"}
               </Badge>
             )}
           </div>
@@ -69,7 +73,16 @@ export default function ProfileClient({ profileData }) {
               <div>
                 <p className="text-sm font-medium">Last Login</p>
                 <p className="text-sm text-muted-foreground">
-                  {user.lastLogin ? new Date(user.lastLogin).toLocaleDateString() : 'N/A'}
+                  {user.lastLogin
+                    ? new Date(user.lastLogin).toLocaleString("en-GB", {
+                        day: "2-digit",
+                        month: "2-digit",
+                        year: "2-digit",
+                        hour: "2-digit",
+                        minute: "2-digit",
+                        second: "2-digit",
+                      })
+                    : "N/A"}
                 </p>
               </div>
             </div>
@@ -79,7 +92,9 @@ export default function ProfileClient({ profileData }) {
                 <div>
                   <p className="text-sm font-medium">Permissions</p>
                   <p className="text-sm text-muted-foreground">
-                    {user.permissions.length > 0 ? user.permissions.join(', ') : 'None'}
+                    {user.permissions.length > 0
+                      ? user.permissions.join(", ")
+                      : "None"}
                   </p>
                 </div>
               </div>
@@ -108,11 +123,13 @@ export default function ProfileClient({ profileData }) {
             <FileText className="h-6 w-6 text-primary" />
             <div>
               <p className="text-lg font-semibold">{stats.resourcesCount}</p>
-              <p className="text-sm text-muted-foreground">Resources Uploaded</p>
+              <p className="text-sm text-muted-foreground">
+                Resources Uploaded
+              </p>
             </div>
           </div>
         </CardContent>
       </Card>
     </motion.div>
-  )
+  );
 }

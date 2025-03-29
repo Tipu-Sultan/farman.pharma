@@ -5,6 +5,7 @@ import Navbar from "@/components/Navbar";
 import { ThemeProvider } from "@/components/theme-provider";
 import ClientProvider from "./ClientProvide";
 import MobileNav from "@/components/MobileNav";
+import { Toaster } from "@/components/ui/toaster";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -26,6 +27,7 @@ export default function RootLayout({ children }) {
             enableSystem
             disableTransitionOnChange
           >
+            <Toaster/>
             {!isAdminRoute && <Navbar />}
             <div className={isAdminRoute ? "" : "pt-16"}> {/* Add padding-top for non-admin routes */}
               {children}
